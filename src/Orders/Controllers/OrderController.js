@@ -29,46 +29,6 @@ const createOrder = async (req, res) => {
 };
 
 /**
- * listsProduct
- * @param req body
- * @returns json
- */
-const listsProduct = async (req, res) => {
-  var filterDate = new Date();
-  try {
-    let filterData = {
-      isActive: true,
-      isDeleted: false,
-      expiry: { $gt: filterDate },
-    };
-    // let limit = 5;
-    // let page = req.query.page;
-    // let skip = (limit * page);
-    const products = await Product.aggregate([
-      {
-        $match: filterData,
-      },
-      //   {
-      //     $lookup: {
-      //       from: "users",
-      //       localField: "userId",
-      //       foreignField: "_id",
-      //       as: "userDetails",
-      //     },
-      //   },
-      { $sort: { createdDate: -1 } },
-      //   { $limit: limit },
-    ]);
-    res
-      .status(200)
-      .json({ data: products, msg: "Product List found successfully", ack: 1 });
-  } catch (err) {
-    console.log("Error => ", err.message);
-    res.status(500).json({ msg: "Something went wrong.." });
-  }
-};
-
-/**
  * TopSaleProduct
  * @param req body
  * @returns json
@@ -134,10 +94,14 @@ const TopSaleProduct = async (req, res) => {
 
     res
       .status(200)
-      .json({ data: orderDetails, msg: "Top Product List Found successfully" });
+      .json({
+        data: orderDetails,
+        msg: "Top Product List Found successfully",
+        ack: 1,
+      });
   } catch (err) {
     console.log("Error => ", err.message);
-    res.status(500).json({ msg: "Something went wrong.." });
+    res.status(500).json({ msg: "Something went wrong..", ack: 0 });
   }
 };
 
@@ -184,9 +148,29 @@ const CurrentProduct = async (req, res) => {
       createdDate: { $gt: lastMonthFirstDay, $lt: lastMonthLastDay },
     };
 
-    const productsLast = await Product.aggregate([
+    const productsLast = await Order.aggregate([
+      //   {
+      //     $match: filterDataLast,
+      //   },
       {
-        $match: filterDataLast,
+        $match: {
+          isActive: true,
+          isDeleted: false,
+          // createdDate: { $gt: lastMonthFirstDay, $lt: lastMonthLastDay },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: {
+            $sum: {
+              $toDouble: "$salePrice",
+            },
+          },
+          count: {
+            $sum: 1,
+          },
+        },
       },
     ]);
 
@@ -195,9 +179,29 @@ const CurrentProduct = async (req, res) => {
       isDeleted: false,
       createdDate: { $gt: firstPreviousfirstDay, $lt: firstPreviouslastDay },
     };
-    const productsFirstPrevious = await Product.aggregate([
+    const productsFirstPrevious = await Order.aggregate([
+      //   {
+      //     $match: filterDataFirstPrevious,
+      //   },
       {
-        $match: filterDataFirstPrevious,
+        $match: {
+          isActive: true,
+          isDeleted: false,
+          // createdDate: { $gt: firstPreviousfirstDay, $lt: firstPreviouslastDay },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: {
+            $sum: {
+              $toDouble: "$salePrice",
+            },
+          },
+          count: {
+            $sum: 1,
+          },
+        },
       },
     ]);
 
@@ -206,9 +210,29 @@ const CurrentProduct = async (req, res) => {
       isDeleted: false,
       createdDate: { $gt: secondPreviousfirstDay, $lt: secondPreviouslastDay },
     };
-    const productsSecondPrevious = await Product.aggregate([
+    const productsSecondPrevious = await Order.aggregate([
+      //   {
+      //     $match: filterDataSecondPrevious,
+      //   },
       {
-        $match: filterDataSecondPrevious,
+        $match: {
+          isActive: true,
+          isDeleted: false,
+          // createdDate: { $gt: secondPreviousfirstDay, $lt: secondPreviouslastDay },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: {
+            $sum: {
+              $toDouble: "$salePrice",
+            },
+          },
+          count: {
+            $sum: 1,
+          },
+        },
       },
     ]);
 
@@ -219,10 +243,106 @@ const CurrentProduct = async (req, res) => {
     };
     res
       .status(200)
-      .json({ data: products, msg: "Product List found successfully" });
+      .json({ data: products, msg: "Product List found successfully", ack: 1 });
   } catch (err) {
     console.log("Error => ", err.message);
-    res.status(500).json({ msg: "Something went wrong.." });
+    res.status(500).json({ msg: "Something went wrong..", ack: 0 });
   }
 };
-export default { createOrder, listsProduct, TopSaleProduct, CurrentProduct };
+
+/**
+ * SaleRatio
+ * @param req body
+ * @returns json
+ */
+const SaleRatio = async (req, res) => {
+  try {
+    const totalAmount = await Order.aggregate([
+      {
+        $match: {
+          isActive: true,
+          isDeleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: {
+            $sum: {
+              $toDouble: "$salePrice",
+            },
+          },
+        },
+      },
+    ]);
+
+    const highestSellingProduct = await Order.aggregate([
+      {
+        $match: {
+          isActive: true,
+          isDeleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: "$productId",
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+
+    const lowestSellingProduct = await Order.aggregate([
+      {
+        $match: {
+          isActive: true,
+          isDeleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: "$productId",
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $sort: { count: 1 } },
+      { $limit: 1 },
+    ]);
+
+    let finalData = {
+      totalAmount,
+      highestSellingProduct,
+      lowestSellingProduct,
+    };
+
+    res
+      .status(200)
+      .json({ data: finalData, msg: "Product Sale Ratio", ack: 1 });
+  } catch (err) {
+    console.log("Error => ", err.message);
+    res.status(500).json({ msg: "Something went wrong..", ack: 1 });
+  }
+};
+
+export default { createOrder, TopSaleProduct, CurrentProduct, SaleRatio };

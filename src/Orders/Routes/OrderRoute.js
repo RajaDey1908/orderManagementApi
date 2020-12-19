@@ -4,7 +4,7 @@ import OrderController from '../Controllers/OrderController';
 const router = express.Router();
 
 router.post('/order', OrderController.createOrder);
-// router.get('/productList', ProductController.listsProduct);
 router.get('/topSaleProduct', OrderController.TopSaleProduct);
-// router.get('/currentProduct', ProductController.CurrentProduct);
+router.get('/saleRatio', OrderController.SaleRatio);
+router.get('/currentProduct', OrderController.CurrentProduct);
 export default router;
