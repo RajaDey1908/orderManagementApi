@@ -10,7 +10,7 @@ const defaultData = {
     CONTACT_US_PRIMARY_ID: "5ee77a1dccd5ccbc8c5408d5",
     SETTING_PRIMARY_ID: '5ed79658b4272f9b0afa9148',
     // BASE_URL: 'http://127.0.0.1:4020',
-    DATABASE_URI: 'mongodb+srv://sourav:sourav@cluster0-kmrns.mongodb.net/carexchange?retryWrites=true&w=majority',
+    DATABASE_URI:'mongodb+srv://raja:raja@cluster0.up0pu.mongodb.net/orderManagement',
     IMAGE_PATH: '/image/',
     USER_IMAGE_PATH: '/userImage/',
     CATEGORY_IMAGE_PATH: '/categoryImage/',

@@ -4,14 +4,14 @@ import cors from "cors";
 import http from 'http';
 import config from "./config/config";
 import header from "./middleware/header";
-import MobileRoute from "./src/MobileApp/Routes";
+import Route from "./src/Orders/Routes";
 
 const app = express(); // Initialize our express app
 
 const port = process.env.PORT || 3029;
 
 app.use(cors());
-app.use("/app", MobileRoute); // Mobile Route
+app.use("/app", Route); //  Route
 // app.use("/admin", AdminRoute); //Admin Route
 app.get("/", (req, res) => {
   res.send("Hello World!");
