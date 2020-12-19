@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
+// require('mongoose-double')(mongoose);
 // Creating Order schema
 
 const schema = new Schema({
@@ -12,11 +13,11 @@ const schema = new Schema({
     ref: "product",
     required: true,
   },
-  price: {
-    type: String,
-  },
+  // price: {
+  //   type: String,
+  // },
   salePrice: {
-    type: String,
+    type: Number,
   },
   isActive: {
     type: Boolean,

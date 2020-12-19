@@ -11,7 +11,7 @@ const schema = new Schema({
     type: String,
   },
   price: {
-    type: String,
+    type: Number,
   },
   expiry: {
     type: Date,

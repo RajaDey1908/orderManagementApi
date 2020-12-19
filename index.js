@@ -11,7 +11,7 @@ const app = express(); // Initialize our express app
 const port = process.env.PORT || 3029;
 
 app.use(cors());
-app.use("/app", Route); //  Route
+app.use("/", Route); //  Route
 // app.use("/admin", AdminRoute); //Admin Route
 app.get("/", (req, res) => {
   res.send("Hello World!");

@@ -33,13 +33,14 @@ const createProduct = async (req, res) => {
  * @returns json
  */
 const listsProduct = async (req, res) => {
+    var filterDate = new Date();
   try {
-    console.log("dfd dfi");
     let filterData = {
       isActive: true,
       isDeleted: false,
+      expiry: { $gt: filterDate },
     };
-    let limit = 5;
+    // let limit = 5;
     // let page = req.query.page;
     // let skip = (limit * page);
     const products = await Product.aggregate([
@@ -55,11 +56,11 @@ const listsProduct = async (req, res) => {
       //     },
       //   },
       { $sort: { createdDate: -1 } },
-      { $limit: limit },
+    //   { $limit: limit },
     ]);
     res
       .status(200)
-      .json({ data: products, msg: "Product List found successfully" });
+      .json({ data: products, msg: "Product List found successfully", ack:1 });
   } catch (err) {
     console.log("Error => ", err.message);
     res.status(500).json({ msg: "Something went wrong.." });
