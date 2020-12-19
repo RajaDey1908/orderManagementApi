@@ -1,7 +1,4 @@
-import Car from "../../Models/Car";
 import Product from "../../Models/Product";
-import config from "../../../config/config";
-import mongoose from "mongoose";
 
 /**
  * createProduct
